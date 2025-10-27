@@ -689,8 +689,8 @@ log_m117_messages: 1
 ```
 gear_from_spool_speed: 200
 gear_from_spool_accel: 100
-gear_from_buffer_speed: 200
-gear_from_buffer_accel: 100
+#gear_from_buffer_speed: 200 # This is not necessary. Delete this line as there is no buffer.
+#gear_from_buffer_accel: 100 # This is not necessary. Delete this line as there is no buffer.
 gear_unload_speed: 200
 gear_unload_accel: 100
 
