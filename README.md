@@ -21,6 +21,7 @@ The EMU supports any number of lanes and base configurations; whether it is a **
 - [Design Objectives & Key Features](#design-objectives)
 - [BOM](#bom)
 - [Assembly Videos](#assembly-videos)
+- [Setup and calibration guide](#setup-and-calibration-guide)
 - [Wiring Instructions and Diagrams](#wiring-diagrams)
 - [Render Gallery](#render-gallery)
 - [License](#this-work-is-licensed-under-a)
@@ -138,9 +139,9 @@ Each lane includes its own eject button, status LED, and a filament colour LED t
 3. Encoder is no longer specified in the default setup That wiring part can be omitted.
 <br/>
 
-## Calibration guide
+## Setup and calibration guide
 
-EMU has been developed and tested using Happy Hare. The setup instructions can be found [here](./docs/software_setup.md).
+EMU has been developed and tested using Happy Hare. The setup and calibration instructions can be found [here](./docs/software_setup.md).
 
 
 ## Wiring Diagrams
