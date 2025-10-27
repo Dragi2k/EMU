@@ -11,11 +11,12 @@ This is a provisional sofware setup guide for the EMU using Happy Hare v3. This 
 - [Configuring the EMU hardware in Happy Hare](#configuring-the-emu-hardware-in-happy-hare)
 - [Configuring Happy Hare](#configuring-happy-hare)
 - [Calibrating the unit](#calibrating-the-unit)
+- [First start up](#first-start-up)
 - [Next steps](#next-steps)
 
 
 ## Setting up CAN Bus
-If your printer does not have canbus set up, follow the excellent guide from Esoterical here: https://canbus.esoterical.online.
+If your printer does not have canbus set up, follow the excellent guide from Esoterical here: https://canbus.esoterical.online. If you are not familiar with CAN Bus, read through the guide from Esoterical. **CAN Bus is simple to set up and operate, but please do read the guide to familiarise yourselves with the CAN Bus concepts and terminology.**
 
 Do not forget to terminate the last EBB board or CANBus device in your bus (depending on your bus topology).
 
@@ -23,6 +24,7 @@ Do not forget to terminate the last EBB board or CANBus device in your bus (depe
 Prior to setting up the EMU, the EBB boards need to be flashed with Katapult and Klipper. Flashing instructions can be found here https://canbus.esoterical.online/toolhead_flashing.html. The boards are flashed in exactly the same way as if they were used as a toolhead board. Below are some high level instructions; however do refer back to the guide by Esoterical for a more comprehensive guide.<br/>
 
 **Step 1:** Install katapult:<br/>
+Katapult is a piece of software that sits on the EBB units (and any CAN Bus device) and acts as an easy way to set your board in "flashing mode" making klipper updates super easy. It is highly recommended that Katapult is flashed on the boards.
 ```
 test -e ~/katapult && (cd ~/katapult && git pull) || (cd ~ && git clone https://github.com/Arksine/katapult) ; cd ~
 ```
@@ -79,7 +81,8 @@ python3 ~/katapult/scripts/flashtool.py -i can0 -f ~/klipper/out/klipper.bin -u 
 
 Repeat step 2 (connect via USB),3 (set in DFU mode),4 (lsusb to confirm DFU),6 (flash katapult),8 (install the board),9 (pick the UUID),10 (flash klipper) for each subsequent board. Please note that as the boards are the same you do not need to re-run the menu config and make process.
 
-Remember to note down the UUID - Lane values for your reference. This combination will be used later in the guide to set up Happy Hare.
+> [!IMPORTANT]
+> Remember to note down the UUID - Lane values for your reference. This combination will be used later in the guide to set up Happy Hare.
 
 ## Updating the boards with the latest klipper version
 ```
@@ -210,7 +213,10 @@ canbus_interface: can0
 ```
 
 **Step 3: Update mmu.cfg with the EMU mcu board pin aliases** <br/><br/>
-After the board definitions, insert the board pin aliases. **Important note:** The first board defines the aliases for the tension and compression sensor too, so it is different to the rest. In the example below I am using an 8 lane configuration.
+After the board definitions, insert the board pin aliases. 
+
+> [!IMPORTANT]
+> **Important note:** The first board defines the aliases for the tension and compression sensor too, so it is different to the rest. In the example below I am using an 8 lane configuration.
 ```
 [board_pins mmu0]
 mcu: mmu0 
@@ -356,7 +362,8 @@ The below starter setup is for an 8 lane unit. To set up a lower lane count, pas
 
 If you have more than 8 lanes, insert accordingly additional blocks, following the patterns as illustrated in the full configuration file below.
 
-**Note:** If during testing you see that the EMU stepper spins backwards, invert the dir_pin by adding a ! infront of it (!dir_pin).
+> [!TIP]
+> If during testing you see that the EMU stepper spins backwards, invert the dir_pin by adding a ! infront of it (!dir_pin).
 
 Finally, update your toolhead sensors definition to match your setup. Here I have the extruder entry (top) sensor in my toolhead can board named EBBCan connected to pin PB6 and the toolhead sensor (post extruder) at pin PB5.
 ```
@@ -501,15 +508,15 @@ entry_leds: neopixel:mmu_leds (2,4,6,8,10,12,14,16) # Second, fourth, sixth LED 
 logo_leds:    
 frame_rate: 24
 
-enabled: True                           # True = LEDs are enabled at startup (MMU_LED can control), False = Disabled
-animation: True                         # True = Use led-animation-effects, False = Static LEDs
-exit_effect: gate_status                #    off|gate_status|filament_color|slicer_color|r,g,b|_effect_
-entry_effect: filament_color            #    off|gate_status|filament_color|slicer_color|r,g,b|_effect_
-status_effect: off                      # on|off|gate_status|filament_color|slicer_color|r,g,b|_effect_
-logo_effect: (0, 0, 0)                        #    off                                        |r,g,b|_effect_
+enabled: True                           # LEDs are enabled at startup
+animation: True                         # Use led-animation-effects
+exit_effect: gate_status                # gate_status in the eject buttons
+entry_effect: filament_color            # filament_color in the dry box LED
+status_effect: off                      # no status LED is on the unit
+logo_effect: (0, 0, 0)                  # no Logo LED is on the unit
 white_light: (1, 1, 1)                  # RGB color for static white light
-black_light: (1, 1, 1)                  # RGB color used to represent "black" (filament)
-empty_light: (0.0, 0.0, 0.0)                  # RGB color used to represent empty gate
+black_light: (1, 1, 1)                  # RGB color used to represent "black" filament
+empty_light: (0.0, 0.0, 0.0)            # Empty gate has eject button "off"
 
 effect_loading:            mmu_blue_clockwise_slow, (0, 0, 0.4)
 effect_loading_extruder:   mmu_blue_clockwise_fast, (0, 0, 1)
@@ -522,12 +529,12 @@ effect_initialized:        mmu_rainbow,             (0.5, 0.2, 0)
 effect_error:              mmu_strobe,              (1, 0, 0)
 effect_complete:           mmu_sparkle,             (0.3, 0.3, 0.3)
 effect_gate_selected:      mmu_static_blue,         (0, 0, 1)
-effect_gate_available:     mmu_static_white_dim,        (0.3, 0.3, 0.3)
+effect_gate_available:     mmu_static_white_dim,    (0.3, 0.3, 0.3)
 effect_gate_available_sel: mmu_ready_white,         (0.75, 0.75, 0.75)
 effect_gate_unknown:       mmu_static_orange,       (0.5, 0.2, 0)
-effect_gate_unknown_sel:   mmu_ready_orange ,       (0.75, 0.3, 0)
+effect_gate_unknown_sel:   mmu_ready_orange,        (0.75, 0.3, 0)
 effect_gate_empty:         mmu_static_black,        (0, 0, 0)
-effect_gate_empty_sel:     mmu_ready_red,          (0.2, 0, 0)
+effect_gate_empty_sel:     mmu_ready_red,           (0.2, 0, 0)
 ```
 
 Add the below custom LED effect colors at the bottom of your **printer.cfg**. These are used in the LED effects above.
@@ -659,7 +666,7 @@ Once all of the above steps are completed hit save and restart klipper. The MMU 
 </p>
 
 ## Configuring Happy Hare
-Now that the hardware is set up and visible to klipper, the next step is to configure the MMU software to match the EMU configuration and capabilities. That configuration will be predominately done in the mmu/base/mmu_parameters.cfg file.
+Now that the hardware is set up and visible to klipper, the next step is to configure the Happy Hare software to match the EMU capabilities and general Type B MMU good practice. That configuration will be predominately done in the mmu/base/mmu_parameters.cfg file. The indicated configuration below is geared towards reliability of feeding vs. filament swap speed. Use that as a starting point and tune to your liking once the unit is fully configured and operational.
 
 ### Setting up the EMU software parameters in mmu/base/mmu_parameters.cfg
 Unlike the hardware setup files, do not delete the content of this file. We will be making targeted changes to match the EMU capabilities as validated through our testing.
@@ -701,19 +708,29 @@ extruder_homing_speed: 16
 macro_toolhead_max_accel: 0
 macro_toolhead_min_cruise_ratio: 0.5
 ```
-**Gate load:** The EMU uses the post stepper (gear) switch sensor as the homing point for the gates. In addition a conservative homing max and preload homing max value has been set to allow the user time to load the filament and ensure it is gripped by the EMU lane stepper. Use the below values as is and do not modify unless trying to troubleshoot a specific issue.</br>
+**Gate load:** The EMU uses the post stepper (gear) switch sensor as the filament homing point for the lanes. That means that when swapping colors, the filament will retract all the way into the EMU dry box. This has three benefits which maximise flexibility in lane / base unit arrangements and reliability in feeding filament:
+1. The filament is kept as dry as possible as it is now fully in the dry box. This results in lower probability of the filament snapping in the lane stepper gear due to it absorbing humidity from the environment.
+2. There is no need for a sensor at the combiner, simplifying wiring setup and configuration.
+3. You can expand to as many lanes as you want with any combination of passive combiners to bring the lane bowden tubes together to one that feeds the toolhead.
+
+The downside is that the full bowden length needs to be traversed when loading, resulting in slightly longer loading times (however that is almost insignificant) and that the bowden length for each lane needs to be calibrated before first use (this is an automated process described later in this guide).
+
+In addition, conservative homing max and preload homing max value have been selected, to allow the user time to load the filament and ensure it is gripped by the EMU lane stepper. 
+
+It is therefore recommended to use the below values as is and do not modify unless trying to troubleshoot a specific issue.</br>
 ```
 gate_homing_endstop: mmu_gear	
 gate_homing_max: 600
 gate_preload_homing_max: 600
 gate_preload_parking_distance: 2
 gate_unload_buffer: 50
-gate_parking_distance: 2
-gate_endstop_to_encoder: 13
+gate_parking_distance: 2          # park the filament 2mm before the stepper exit switch. Do not increase this value beyond this as you are then risking the filament walking past the stepper gears.
 gate_autoload: 1
 gate_final_eject_distance: 100
 ```
-**Bowden load:** As the EMU can accomodate long bowden tubes feeding to the printer, the following adjustments need to be made to allow Happy Hare to operate in that environment.</br>
+**Bowden load:** As the EMU can accomodate long bowden tubes feeding to the printer, the bowden_homing_max is increased to allow Happy Hare to feed a longer run. 
+
+In addition the correction and unload test moves are disabled as the encoder is not fitted in the base setup. From experience, encoders tend to accumulate dust after a few thousand swap cycles requiring ongoing maintenance. In addition they materially elevate the noise profile of the unit and add a point of "filament impact" in the bowden loading path.</br>
 ```
 bowden_homing_max: 3000	# if the EMU lane to toolhead distance is larger than 3 meters, increase this value.
 
@@ -721,9 +738,9 @@ bowden_apply_correction: 0
 bowden_allowable_load_delta: 10.0
 
 bowden_pre_unload_test: 0	
-bowden_pre_unload_error_tolerance: 60
+bowden_pre_unload_error_tolerance: 60 
 ```
-**Extruder homing:** From experience the below values are tuned to improve overall feeding reliability vs the Happy Hare stock values.</br>
+**Extruder homing:** The below values are tuned to improve overall feeding reliability. The extruder homing max value has been increased, allowing for slight slippage during the bowden load to be compensated for. In addition, the homing buffer has been increased reducing the fast load speed 50mm before the filament arrives at the toolhead, to reduce possibility of filament impacting the gears.</br>
 ```
 extruder_homing_max: 400			# Larger than the default HH value. This allows for homing to complete even if the filament skips steps during the load/
 extruder_homing_endstop: extruder	
@@ -732,7 +749,9 @@ extruder_collision_homing_current: 100
 
 extruder_force_homing: 0
 ```
-**Toolhead Load:** This section needs to be populated following toolhead dimension calibration. Starter values from the community are available here: https://link.3dcoded.xyz/tipconfigs/ . Adust the below settings as shown to improve feeding reliability and allow for more "flex" in a slightly miss-tuned setup</br>
+**Toolhead Load:** This section needs to be populated following toolhead dimension calibration. Starter values from the community are available here: https://link.3dcoded.xyz/tipconfigs/ . 
+
+In addition, the below settings have been adjusted to allow more tolerance in case of the extruder delaying grabbing the filament, which improves feeding reliability and allows for more "flex" in a slightly miss-tuned setup</br>
 ```
 toolhead_homing_max: 250			# Increased from default of 40, to allow more tolerance in the extruder not grabbing the filament immediately.
 toolhead_unload_safety_margin: 50	# Increased from the default of 10, to ensure filament is for sure clear of the extruder during unload.
@@ -744,34 +763,34 @@ toolhead_entry_tension_test: 0		# Not required - toolhead sensor ensures feeding
 ```
 force_form_tip_standalone: 1		  # Always standalone tip forming (TURN SLICER OFF!)
 form_tip_macro: _MMU_CUT_TIP	
-extruder_form_tip_current: 130		# Bump up extruder current during tip forming. Helps guarantee no skipped steps on the extruder if cutting is not 100% clean
+extruder_form_tip_current: 130		  # Bump up extruder current during tip forming. Helps ensure no skipped steps on the extruder if cutting is not 100% clean
 slicer_tip_park_pos: 0			      # This specifies the position of filament in extruder after slicer completes tip forming. (TURN SLICER TIP FORMING OFF!)
 ```
-**Purging:** If you have the blobifier set up, enable it here. For a baseline, starter setup, the below is recommended.</br>
+**Purging:** If you have the blobifier set up, enable it here. For a baseline, starter setup, the below is recommended. Setting up the blobifier is recommended to be done after this guide is complete and your first test print is completed successfully.</br>
 ```
-force_purge_standalone: 0 		# Use slicer purging (purge block)
-purge_macro: _MMU_PURGE			# Replace this with BLOBIFIER when set up (and set force purge stand alone to 1)
-extruder_purge_current: 100		# leave this unchanged.
+force_purge_standalone: 0 		# Use slicer purging (purge block) - set to 1 for blobifier
+purge_macro: _MMU_PURGE			# Replace this with BLOBIFIER when set up
+extruder_purge_current: 100		# leave this unchanged. If the extruder is skipping during purging with the blobifier you are most likely exceeding your hotend flow limit.
 ```
-**Motor sync:** Setup sync feedback sensor (EMUSync) here.</br>
+**Motor sync:** Setup sync feedback sensor (EMUSync) here. The sync multiplier high and low values allow for +/- 10% tolerance in rotation distance variation between your EMU lane and your extruder. If you find you need more than this for the unit to stay in sync then most likely either your extruder or EMU lane is not calibrated correctly.</br>
 ```
-sync_gear_current: 80			# 80% EMU stepper current during printing
-sync_feedback_enabled: 1		# Turn on sync feedback sensor
+sync_gear_current: 80			    # 80% EMU stepper current during printing -> 0.64A
+sync_feedback_enabled: 1		    # Enable EMU Sync sync feedback sensor
 sync_feedback_buffer_range: 12		# EMU Sync switch to switch distance
 sync_feedback_buffer_maxrange: 25	# EMU Sync max travel
-sync_multiplier_high: 1.10		# over-drive by 10% when in tension
-sync_multiplier_low: 0.90		# under-drive by 10% when in compression
+sync_multiplier_high: 1.10		    # over-feed by 10% when in tension
+sync_multiplier_low: 0.90		    # under-feed by 10% when in compression
 ```
-**Filament Management:** Disable clog detection and enable endless spool.</br>
+**Filament Management:** Disable clog detection (as the encoder is not fitted to the unit) and enable endless spool (automated failover to the next available spool as defined in the gate map, administered via the Mainsail UI or Klipperscreen).</br>
 ```
 enable_clog_detection: 0		
-enable_endless_spool: 1			# enable endless spool
+enable_endless_spool: 1			    # enable endless spool
 endless_spool_on_load: 0	
 endless_spool_eject_gate: -1		# Eject filament in the current gate
 ```
 Here you can also configure spoolman filament management (highly recommended - instructions here:https://github.com/moggieuk/Happy-Hare/wiki/Spoolman-Support). </br></br>
 
-**Calibration:** While happy hare can auto calibrate both the bowden tube length and lane rotation distance, I personally recommend a manual calibration for run to run consistency</br>
+**Calibration:** While happy hare can auto calibrate both the bowden tube length and lane rotation distance, I personally recommend a manual calibration for run to run consistency. Therefore all automated calibrations are disabled to ensure run-to-run consistency.</br>
 ```
 autocal_bowden_length: 0	# Disable automated bowden length calibration
 autotune_bowden_length: 0	# Disable automated bowden length tuning
@@ -783,44 +802,48 @@ autotune_encoder: 0		# Encoder not fitted
 
 **Misc:** Minor options tuning and instructing Happy Hare that a filamentalist rewinder is used instead of a buffer </br>
 ```
-timeout_pause: 86400		    # Idle time out 
-disable_heater: 60		      # Delay in seconds after which the hotend heater is disabled in the MMU_PAUSE state
-default_extruder_temp: 230	# Default temperature for performing swaps and forming tips when not in print (overridden by gate map)
-extruder_temp_variance: 30	# When waiting for extruder temperature this is the +/- permissible variance in degrees (>= 1)
+timeout_pause: 86400		    # Idle time out in seconds. Set to 24 hours, to allow you to react and fix a pause if a swap issue materialises.
+disable_heater: 60		        # Disable the hotend heater 60 seconds after an error is detected to reduce oozing.
+default_extruder_temp: 230	    # Default temperature for performing swaps and forming tips when not in print (overridden by gate map). 230C is a good all around temperature for most material types.
+extruder_temp_variance: 30	    # When waiting for extruder temperature this is the +/- permissible variance in degrees (>= 1).
 
 startup_home_if_unloaded: 0	    # 0 = do nothing
-startup_reset_ttg_map: 0	      #  0 = do nothing
-show_error_dialog: 0		        # 0 = show error in console
-preload_attempts: 5		          # How many "grabbing" attempts are made to pick up the filament with preload feature
+startup_reset_ttg_map: 0	    #  0 = do nothing
+show_error_dialog: 0		    # 0 = show error in console only. No mainsail pop-up
+preload_attempts: 5		        # How many "grabbing" attempts are made to pick up the filament with preload feature
 strict_filament_recovery: 0	    # If enabled with MMU with toolhead sensor, this will cause filament position recovery to
-				                        # perform extra moves to look for filament trapped in the space after extruder but before sensor
-filament_recovery_on_pause: 1	  # 1 = Run a quick check to determine current filament position on pause/error, 0 = disable
-retry_tool_change_on_error: 1	  # Automatically retry a failed tool change.
-bypass_autoload: 1		          # If extruder sensor fitted this controls the automatic loading of extruder for bypass operation
-has_filament_buffer: 0          # Whether the MMU has a filament buffer. Set to 0 if using Filamentalist or DC eSpooler, etc
+                                # perform extra moves to look for filament trapped in the space after extruder but before sensor
+                                # This is largely uncessary but can be enabled if your toolhead setup is not particularly reliable.
+filament_recovery_on_pause: 1	# Run a quick check to determine current filament position on pause/error.
+retry_tool_change_on_error: 1	# Automatically retry a failed tool change. While this may mask a unit issue, we are aiming for relability during print.
+bypass_autoload: 1		        # If extruder sensor fitted, this controls the automatic loading of extruder for bypass operation
+has_filament_buffer: 0          # We are using a Filamentalist so no separate filament buffer is installed
 #
 # Advanced options. Don't mess unless you fully understand. Read documentation.
 #
-encoder_move_validation: 1	# ADVANCED: 1 = Normally Encoder validates move distances are within given tolerance
-                            #           0 = Validation is disabled (eliminates slight pause between moves but less safe)
-print_start_detection: 1	  # ADVANCED: Enabled for Happy Hare to automatically detect start and end of print and call
-				                    # ADVANCED: MMU_PRINT_START and MMU_PRINT_END automatically. Harmless to leave enabled but can disable
-                            #           if you think it is causing problems and known START/END is covered in your macros
-extruder: extruder		      # ADVANCED: Name of the toolhead extruder that MMU is using
-gcode_load_sequence: 0		  # VERY ADVANCED: Gcode loading sequence 1=enabled, 0=internal logic (default)
-gcode_unload_sequence: 0	  # VERY ADVANCED: Gcode unloading sequence, 1=enabled, 0=internal logic (default)
+encoder_move_validation: 0	     # ADVANCED: 1 = Normally Encoder validates move distances are within given tolerance
+                                 #           0 = Validation is disabled (eliminates slight pause between moves but less safe)
+print_start_detection: 1	     # ADVANCED: Enabled for Happy Hare to automatically detect start and end of print and call
+                                 # ADVANCED: MMU_PRINT_START and MMU_PRINT_END automatically. Harmless to leave enabled but can disable
+                                 #           if you think it is causing problems and known START/END is covered in your macros
+extruder: extruder		         # ADVANCED: Name of the toolhead extruder that MMU is using
+gcode_load_sequence: 0		     # VERY ADVANCED: Gcode loading sequence 1=enabled, 0=internal logic (default)
+gcode_unload_sequence: 0	     # VERY ADVANCED: Gcode unloading sequence, 1=enabled, 0=internal logic (default)
 ```
 
-**Klipper:** Enable klipper TTC mitigations </br>
+**Klipper:** Enable klipper timer too close (TTC) mitigations.</br>
 ```
-update_trsync: 1		      # 1 = Increase TRSYNC_TIMEOUT, 0 = Leave the klipper default
+update_trsync: 1		    # 1 = Increase TRSYNC_TIMEOUT, 0 = Leave the klipper default
 canbus_comms_retries: 3		# Number of retries. Recommend the default of 3.
 update_bit_max_time: 1		# 1 = Increase BIT_MAX_TIME, 0 = Leave the klipper default
-update_aht10_commands: 0	# 1 = Config AHT10 for BTT ViViD heater sensor, 0 = Leave the klipper default
+update_aht10_commands: 0	# BTT ViViD specific setting. Leave at 0.
 ```
 
 ### Setting up the EMU software parameters in mmu/base/mmu_macro_vars.cfg
-Unlike the hardware setup files, do not delete the content of this file. The below are some common settings that I have found usefull to change from default. However the detailed guide on Happy hare needs to be followed to set up your cut tip macro and to configure the system for your specific printer setup. For more read here: https://github.com/moggieuk/Happy-Hare/wiki/Configuring-mmu_macro_vars.cfg
+Unlike the hardware setup files, do not delete the content of this file. The below are some common settings that I have found usefull to change from default. However, the **detailed guide on Happy hare must be followed to set up your cut tip macro and to configure the system for your specific printer setup**. For more read here: https://github.com/moggieuk/Happy-Hare/wiki/Configuring-mmu_macro_vars.cfg
+
+> [!WARNING]
+> **WARNING: DO NOT RUN A PRINT WITHOUT CONFIGURING THE ABOVE.** The stock cut tip macro will most likely not work for your setup and you will crash the hotend on the cutter.
 
 ```
 variable_min_toolchange_z       : 15.0 # Be safe and dont scratch the bed
@@ -858,7 +881,9 @@ MMU_TEST_MOVE MOVE=200 # run this once or more till you get filament out from th
 MMU_TEST_MOVE MOVE=100
 MMU_CALIBRATE_GEAR MEASURED=102.5 #102.5 is an example value and should correspond to the value measured.
 ```
-**Note:** If you observe significant variation between gates, double check that your BMG gears are centred with the filament path and that the tension is approximately as equal as possible between them.
+
+> [!IMPORTANT]
+> If you observe significant variation between gates, double check that your BMG gears are centred with the filament path and that the tension is approximately as equal as possible between them.
 
 
 Rotation distance calibration is now done! 
@@ -866,7 +891,8 @@ Rotation distance calibration is now done!
 ### Bowden tube calibration
 Now remove the short PTFE tube from the rear of the dry box and connect the combiner and your bowden tube to the EMU Sync and from there to the toolhead. The final calibration is to measure the length of bowden tube from the lane filament parking location to the toolhead. These will be different for each lane, hence these need to be individually calibrated following the procedure below.
 
-**IMPORTANT:** When calibrating bowden length for each lane, it is mandatory to keep the EMUSync manually held in the tension position, ie the two tubes brought towards each other. Why? The bowden calibration measures how much filament the lane feeds till the toolhead entry sensor is triggered. If the EMU Sync is left free, the springs can unpredictably compress/expand resulting in incorrect calibration. In addition, holding the EMU Sync in tension means the bowden length is slightly shorter. This helps avoid scenarios where the filament hits against the extruder if the lane rotation distance is slightly off.
+> [!IMPORTANT]
+> **IMPORTANT:** When calibrating bowden length for each lane, it is mandatory to keep the EMUSync manually held in the tension position, ie the two tubes brought towards each other. Why? The bowden calibration measures how much filament the lane feeds till the toolhead entry sensor is triggered. If the EMU Sync is left free, the springs can unpredictably compress/expand resulting in incorrect calibration. In addition, holding the EMU Sync in tension means the bowden length is slightly shorter. This helps avoid scenarios where the filament hits against the extruder if the lane rotation distance is slightly off.
 
 ```
 MMU_SELECT GATE=0
@@ -878,6 +904,20 @@ MMU_SELECT GATE=1 # then 2,3,4, etc etc.
 MMU_CALIBRATE_BOWDEN
 ```
 The unit calibration is now done and the unit is ready to be used!
+
+## First start up
+Follow the below first start up procedure to validate correct wiring of the EMU.
+
+1. Load filament to each gate. The filament should be parked right before the post stepper sensor. In the UI, verify that the MMU Pre Gate sensor for the lane is marked as **detected** and the MMU Gear sensor for the lane is marked as **empty**. If not, you have them wired backwards. Swap their position in the mmu_hardware.cfg file.
+2. Run the MMU_TEST_MOVE MOVE=50 command. Verify that the MMU Gear sensor for the lane is marked as **detected**. If not, you may have a wire break in the system.
+3. Press the eject button. The filament should now be ejected from the unit. If not, you may have a wire break in the system.
+4. Verify that the LEDs change color as the filament is inserted. From off to white for the eject button and off to white (if not using spoolman) for the led inside the box. If not, you may have either a power issue to the LED's or the in-out wiring sequence in the LED chain is wrong.
+5. Validate your sync feedback sensor wiring. Bring the two sides of the bowden tube together. The tension switch should be showing as **detected** in the UI. Move the two sides of the bowden tube away from each other till the switch clicks. The compression switch should be showing as **detected** in the UI. If not, you have them wired backwards. Swap their position in the mmu_hardware.cfg file.
+6. Home the printer, load filament to the first lane and type T0. The hotend should heat up to 230C and load filament to the toolhead. If the filament crashes to the extruder entry, your bowden distance calibration is off. If there is excessive material coming out of the nozzle, the toolhead calibration is off.
+
+**After you have setup your Cut Tip macro** parameters:
+1. Type MMU_UNLOAD. The toolhead should cut the filament and rewind to the EMU.
+2. If the toolhead fails to cut, the cut tip macro is not configured correctly
 
 ## Next Steps
 Finally you have to set up your slicer to recognise and operate with a multi-material unit. More instructions can be found here: https://github.com/moggieuk/Happy-Hare/wiki/Slicer-Setup
