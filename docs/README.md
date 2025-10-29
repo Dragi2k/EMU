@@ -4,6 +4,9 @@
 ### A new take on a MMU by <a href="https://github.com/DW-Tas">DW-Tas</a> and <a href="https://github.com/igiannakas">igiannakas</a><br/>
 <a href="https://ko-fi.com/O5O5OCC0K"><img src="/docs/assets/images/Ko-fi_smol.png"> Ko-Fi</a>
 
+<p align="center">
+  <img src="/docs/assets/images/EMU_multi_lane_unit.png" width="100%">
+</p>
 
 ## Step 1: [Printing, assembly and wiring](/docs/assembly_wiring)
 This page explains the EMU assembly and wiring. It links the BOM, detailed print settings for all of the EMU parts, including tips on how to achieve the optimal print reseults. It also includes the assembly videos, covers multi-lane and single-lane wiring for both EBB42/36 boards.
@@ -58,10 +61,6 @@ In addition, to add further lanes, follow  the instructions here: [Expanding the
 ## Seeking help
 
 The Happy Hare discord is a great resource to help you going. Both in the general channel as well as the dedicated EMU channel. Link to the discord can be found here: https://discord.gg/aABQUjkZPk
-
-<p align="center">
-  <img src="/docs/assets/images/EMU_multi_lane_unit.png" width="100%">
-</p>
 
 #### This work is licensed under a
 [Creative Commons Attribution-NonCommercial-ShareAlike 4.0 International License][cc-by-nc-sa].
