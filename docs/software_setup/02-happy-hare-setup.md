@@ -655,7 +655,7 @@ slicer_tip_park_pos: 0			      # This specifies the position of filament in extr
 **Purging:** If you have the blobifier set up, enable it here. For a baseline, starter setup, the below is recommended. Setting up the blobifier is recommended to be done after this guide is complete and your first test print is completed successfully.</br>
 ```
 force_purge_standalone: 0 		# Use slicer purging (purge block) - set to 1 for blobifier
-purge_macro: _MMU_PURGE			# Replace this with BLOBIFIER when set up
+purge_macro: 			            # Replace this with BLOBIFIER when set up. Leave empty if not using the blobifier. 
 extruder_purge_current: 100		# leave this unchanged. If the extruder is skipping during purging with the blobifier you are most likely exceeding your hotend flow limit.
 ```
 **Motor sync:** Setup sync feedback sensor (EMUSync) here. The sync multiplier high and low values allow for +/- 10% tolerance in rotation distance variation between your EMU lane and your extruder. If you find you need more than this for the unit to stay in sync then most likely either your extruder or EMU lane is not calibrated correctly.</br>
