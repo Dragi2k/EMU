@@ -4,11 +4,6 @@
 ### A new take on a MMU by <a href="https://github.com/DW-Tas">DW-Tas</a> and <a href="https://github.com/igiannakas">igiannakas</a><br/>
 <a href="https://ko-fi.com/O5O5OCC0K"><img src="/docs/assets/images/Ko-fi_smol.png"> Ko-Fi</a>
 
-
-> [!WARNING] 
-> ***Under Active/Early Development*** <br/>
-> Build at your own risk
-
 **Introducing the EMU, the Expandable Multi-material Unit from down under.** The EMU is a modular, flexible, upgradable, reliable and service-friendly MMU designed around the proven filamentalist V3 platform.
 
 The EMU supports any number of lanes and base configurations; whether it is a **single lane setup** to assist filament loading, a **dual lane configuration** for endless spool, or a **multi-lane, multi base unit setup** for multi-material printing. It is also **expandable**, with no re-printing of parts required when upgrading from a 2 lane to a multiple lane setup.
