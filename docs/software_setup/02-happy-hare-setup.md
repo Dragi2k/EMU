@@ -660,7 +660,7 @@ extruder_purge_current: 100		# leave this unchanged. If the extruder is skipping
 ```
 **Motor sync:** Setup sync feedback sensor (EMUSync) here. The sync multiplier high and low values allow for +/- 10% tolerance in rotation distance variation between your EMU lane and your extruder. If you find you need more than this for the unit to stay in sync then most likely either your extruder or EMU lane is not calibrated correctly.</br>
 ```
-sync_gear_current: 80			    # 80% EMU stepper current during printing -> 0.64A
+sync_gear_current: 60			    # 60% EMU stepper current during printing -> ~0.5A
 sync_feedback_enabled: 1		    # Enable EMU Sync sync feedback sensor
 sync_feedback_buffer_range: 12		# EMU Sync switch to switch distance
 sync_feedback_buffer_maxrange: 25	# EMU Sync max travel
