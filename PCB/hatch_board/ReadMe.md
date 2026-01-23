@@ -27,9 +27,11 @@ Due to the PCB being thinner than the printed box wiring hatch, **the 2x M3x8mm 
 
 If buying pre-assembled, the corresponding straight through hole PCB header JST connectors in the BOM are no longer needed (1x JST XH 8 pin plug and 1x JST XH 4 pin plug).
 
-If making your own and soldering the JST headers, you'll need the below additions:
+If making your own and soldering the JST headers, you'll need the below JST PCB headers:
 - 3x JST XH Series Straight Through Hole PCB Header, 4 Contact
-- 3x JST XH Series Straight Through Hole PCB Header, 2 Contact 
+- 3x JST XH Series Straight Through Hole PCB Header, 2 Contact
+- 1x JST XH Series Straight Through Hole PCB Header, 8 Contact **(part of the EMU BOM)**
+- 1x JST XH Series Straight Through Hole PCB Header, 4 Contact **(part of the EMU BOM)**
 
 ## Sourcing
 The hatch board PCBs can be sourced from [kashine6 shop](https://www.aliexpress.com/item/1005011529532141.html) in packs of 5, or ordered DIY from JLCPCB or alternative PCB manufacturers.
