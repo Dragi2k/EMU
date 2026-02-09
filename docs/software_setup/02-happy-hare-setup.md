@@ -196,6 +196,16 @@ require_bowden_move: 1
 filament_always_gripped: 1	
 has_bypass: 1 
 
+# Add your temperature and humidity sensors here for them to be visible in mainsail. One line per lane.
+# Supported in HH vesion 3.42 and above.
+environment_sensors:   temperature_sensor Lane_0, 
+						            temperature_sensor Lane_1,
+                        temperature_sensor Lane_2,
+                        temperature_sensor Lane_3,
+                        temperature_sensor Lane_4,
+                        temperature_sensor Lane_5,
+                        temperature_sensor Lane_6,
+                        temperature_sensor Lane_7 
 
 # FILAMENT DRIVE GEAR STEPPER  -----------------------------------------------------------------------------------------
 [tmc2209 stepper_mmu_gear]
