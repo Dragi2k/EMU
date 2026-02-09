@@ -145,6 +145,8 @@ The below print settings are recommended for the base units and their accessorie
 1. Base unit top clamping screws (M3x8 FHCS) now screw into heatset inserts inserted on the other side of the frame.
 2. External combiner sensor is no longer specified in the default setup. That wiring part can be omitted.
 3. Encoder is no longer specified in the default setup. That wiring part can be omitted.
+4. Wiring is performed using the legacy method where a single LED chain was being created tied to the first EBB board. Current wiring approach wires each lane's LED's to the corresponding lane EBB, effectively moving away from one chain to N chains, where N is the number of lanes in the system. This simplifies wiring greatly and contains the wiring for each lane within the lane itself.
+5. CANbus entry wires (Yellow/Green) are now connected directly to the first lane EBB42/36, ommiting the WAGO connectors. Only the power wires and LED signal wire are now connected to the WAGO connectors.
 
 ### Part 5: EMU Sync Assembly images
 <table>
@@ -185,36 +187,25 @@ Make sure the PTFE tube is pushed all the way inside the combiner. Not just at t
 ## Wiring Instructions and Diagrams
 Depending on the number of lanes assembled, the wiring will vary slightly. Below are some initial wiring key notes to get your started.<br/>
 
-**Multi-lane setup wiring notes (2+ lanes)**
-1. Please note that the sync feedback sensor is connected to the first lane board. The encoder and combiner endstop is connected to the second lane EBB board.
+**Wiring notes**
+1. Please note that the sync feedback sensor is connected to the first lane board.
 2. The CAN bus umbilical from the printer feeds power and the CAN H / L wires to the WAGO connectors in the first lane. 
-3. A 24V and Ground "bus" is established throughout the base unit using the two rearward WAGO connectors (WAGO 3 and WAGO 4).
-4. The EBB boards connect to the power bus for power via their XT ports.
-5. The EBB boards are daisy chained to establish the CANbus network. The first lane canbus High / Low / Power wires are connected to the first lane WAGO connectors.
-7. The second lane canbus High / Low wires are connected to the CAN out dupont connectors on the first board itself. Creates the daisy chain
+3. A 24V and Ground "bus" is established throughout the base unit using the two rear WAGO connectors (WAGO 3 and WAGO 4).
+4. The EBB boards connect to the power bus for power and plugged in using their Molex ports.
+5. The EBB boards are daisy chained to establish the CANbus network. The first lane canbus High / Low are connected to the box cable entry and power from the first lane WAGOs (wago 3 and 4).
+7. The second lane canbus High / Low wires are connected to the CAN out dupont connectors on the first board itself. This creates the daisy chain.
 9. The last EBB board needs the 120Ohm resistor installed.
-10. The second lane, third lane etc 2nd WAGO connector is used to connect the Neopixel Out wire from the eject button to the Neopixel In wire on the dry box.
-11. The second lane, third lane etc 1st WAGO connector is used to connect the Neopixel Out wire from the dry box to the next lane Neopixel In wire on the eject button.
+10. Each lane's 2nd WAGO connector is used to connect the Neopixel Out wire from the eject button to the Neopixel In wire on the dry box.
 
 **Adding a second base unit** <br/>
 You can daisy chain as many base units as you desire. Simply wire the XT30+2 CAN out port next to the last lane to the power bus and CAN H / L dupont connectors on the last EBB board. The next base unit can connect using a standard CAN Bus cable to the first unit.
 
-
-**Single-lane setup wiring notes (2+ lanes)** <br/>
-1. A single lane setup does not support an encoder/combiner. Instead, the Post Extruder sensor is configured in the Happy Hare configuration as the gate sensor.
-2. There is no daisy chaining required. The single EBB board is connected to the first lane WAGO connectors.
-3. There is no daisy chaining of subsequent lane Neopixels. 
 
 **EBB 42 wiring diagram**<br/>
 <p align="center">
   <img src="/docs/assets/wiring_diagrams/EMU_wiring_ebb42.png" width="95%">
 </p>
 
-**EBB 36 wiring diagram**<br/>
-Please note, the EBB36 uses identical pin definitions to the EBB42.
-<p align="center">
-  <img src="/docs/assets/wiring_diagrams/EMU_wiring_ebb36.png" width="95%">
-</p>
 
 **Printer PSU**<br/>
 > [!WARNING]
