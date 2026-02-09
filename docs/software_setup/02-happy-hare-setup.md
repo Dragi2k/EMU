@@ -167,11 +167,10 @@ The below starter setup is for an 8 lane unit. To set up a lower lane count, pas
 1. **num_gates: 8 -> to equal to the number of lanes you have**
 2. **Delete the unecessary tmc and stepper blocks**. For example if you have a 5 lane unit, delete `[tmc2209 stepper_mmu_gear_5]`, `[tmc2209 stepper_mmu_gear_6]`, `[tmc2209 stepper_mmu_gear_7]` blocks from the below.
 3. **Delete the uncesessary pre_gate_switch_pin lines and post_gear_switch_pin lines**. For example for a 5 lane setup, remove `pre_gate_switch_pin_5`, `pre_gate_switch_pin_6`, `pre_gate_switch_pin_7`, `post_gear_switch_pin_5`, `post_gear_switch_pin_6`, `post_gear_switch_pin_7`
-4. **Update the LED chain_count**: 16 is for 8 lanes. This needs to be equal to number of lanes x 2. So for a 5 lane setup this would be set to 10.
-5. **Update the LED effect exit leds**: `exit_leds: neopixel:mmu_leds (1,3,5,7,9,11,13,15)` is for 8 lanes. For 5, this should be exit_leds: neopixel:mmu_leds (1,3,5,7,9)` .
-6. **Update the LED effect entry leds**: `entry_leds: neopixel:mmu_leds (2,4,6,8,10,12,14,16)` is for 8 lanes. For 5, this should be `entry_leds: neopixel:mmu_leds (2,4,6,8,10)`
+4. **Delete the uncesessary LED blocks**: add or remove `[neopixel mmuN_leds]` to match your number of lanes
+5. ***Delete the uncesessary LED effect exit leds**: Add / remove `neopixel:mmuN_leds (2)` and `neopixel:mmuN_leds (1)` from the corresponding entry and exit sections in the `[mmu_leds unit0]` block.
 
-If you have more than 8 lanes, insert accordingly additional blocks, following the patterns as illustrated in the full configuration file below.
+If you have more than 8 lanes, insert accordingly additional blocks, following the patterns illustrated in the full configuration file below.
 
 > [!TIP]
 > If during testing you see that the EMU stepper spins backwards, invert the dir_pin by adding a ! infront of it (!dir_pin).
@@ -316,17 +315,66 @@ sync_feedback_compression_pin: ^mmu0:MMU_COMPRESSION
 
 # MMU NEOPIXEL LED SUPPORT ------------------------------------------------------------------------------------
 
-[neopixel mmu_leds]
+[neopixel mmu0_leds] # one block per lane (Lane 0)
 pin: mmu0:MMU_NEOPIXEL
-chain_count: 16			# Number lanes x2
-color_order: GRBW		# Set based on your particular neopixel specification
+chain_count: 2			# one for the box and one for the eject button
+color_order: GRBW		
+
+[neopixel mmu1_leds] # one block per lane (Lane 1)
+pin: mmu1:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW		
+
+[neopixel mmu2_leds] # one block per lane (Lane 2)
+pin: mmu2:MMU_NEOPIXEL
+chain_count: 2		
+color_order: GRBW	
+
+[neopixel mmu3_leds] # one block per lane (Lane 3)
+pin: mmu3:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW
+
+[neopixel mmu4_leds] # one block per lane (Lane 4)
+pin: mmu4:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW
+
+[neopixel mmu5_leds] # one block per lane (Lane 5)
+pin: mmu5:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW
+
+[neopixel mmu6_leds] # one block per lane (Lane 6)
+pin: mmu6:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW
+
+[neopixel mmu7_leds] # one block per lane (Lane 7)
+pin: mmu7:MMU_NEOPIXEL
+chain_count: 2			
+color_order: GRBW	
 
 # MMU LED EFFECT SEGMENTS ----------------------------------------------------------------------------------------------
-
 [mmu_leds unit0]
-exit_leds:   neopixel:mmu_leds (1,3,5,7,9,11,13,15) # First, third, fifth LED and so forth.
-entry_leds: neopixel:mmu_leds (2,4,6,8,10,12,14,16) # Second, fourth, sixth LED and so forth.
-logo_leds:    
+exit_leds:
+  neopixel:mmu0_leds (1) # add/remove to match number of lanes
+  neopixel:mmu1_leds (1)
+  neopixel:mmu2_leds (1)
+  neopixel:mmu3_leds (1)
+  neopixel:mmu4_leds (1)
+  neopixel:mmu5_leds (1)
+  neopixel:mmu6_leds (1)
+  neopixel:mmu7_leds (1)
+entry_leds:
+  neopixel:mmu0_leds (2) # add/remove to match number of lanes
+  neopixel:mmu1_leds (2)
+  neopixel:mmu2_leds (2)
+  neopixel:mmu3_leds (2)
+  neopixel:mmu4_leds (2)
+  neopixel:mmu5_leds (2)
+  neopixel:mmu6_leds (2)
+  neopixel:mmu7_leds (2)
 frame_rate: 24
 
 enabled: True                           # LEDs are enabled at startup
@@ -363,7 +411,7 @@ effect_gate_empty_sel:     mmu_ready_red,           (0.2, 0, 0)
 Start by completely deleting the content of that file and hitting save.
 
 **Step 2: Paste the below configuration in the mmu_eject_buttons_hw.cfg file**<br/><br/>
-The below starter setup is for an 8 lane unit. To set up a lower lane count, paste the complete content below and delete the corresponding [gcode_button mmu_eject_button_N] sections. If you have more than 8 lanes, add more blocks following the patterns below.
+The below starter setup is for an 8 lane unit. To set up a lower lane count, paste the complete content below and delete the corresponding `[gcode_button mmu_eject_button_N]` sections. If you have more than 8 lanes, add more blocks following the patterns below.
 ```
 [gcode_button mmu_eject_button_0]
 pin: mmu0:EJECT_BUTTON
@@ -399,7 +447,7 @@ press_gcode: _MMU_EJECT_BUTTON GATE=7
 ```
 
 ### Upload the emu_macros.cfg file and reference it in your printer.cfg
-The linked file here contains a set of configurations and definitions that are required for EMU to function. In addition, it contains a fan auto control macro, to minimize noise and ensure adequate unit cooling. File: https://github.com/DW-Tas/EMU/tree/main/macros
+The [linked file here](https://github.com/DW-Tas/EMU/tree/main/macros) contains a set of configurations and definitions that are required for EMU to function. In addition, it contains a fan auto control macro, to minimize noise and ensure adequate unit cooling.
 
 Upload that file in your klipper environment and add the below line to include it in your printer.cfg file:
 ```[include emu_macros.cfg]```
