@@ -7,6 +7,8 @@ This is a provisional sofware setup guide for the EMU using Happy Hare v3. This 
 - [Installing Happy Hare](#installing-happy-hare)
 - [Configuring the EMU hardware](#configuring-the-emu-hardware)
 - [Configuring Happy Hare parameters](#configuring-happy-hare-parameters)
+- [Configuring PFS and Flowguard](#configuring-pfs-and-flowguard)
+- [EMUSync PFS insights](#emusync-pfs-insights)
 
 ## Installing Happy Hare
 Install Happy Hare. More detailed instructions can be found here: https://github.com/moggieuk/Happy-Hare/wiki/Installation
@@ -702,3 +704,99 @@ Unlike the hardware setup files, do not delete the content of this file. The bel
 variable_min_toolchange_z       : 15.0 # Be safe and dont scratch the bed
 variable_park_travel_speed      : 450  # Travel a bit faster to avoid stringing
 ```
+
+## Configuring PFS and Flowguard
+EMU and Happy Hare supports using a [proportional sync feedback sensor](https://github.com/DW-Tas/EMU/tree/main/STL/Tension-compression-sensor/Proportional%20Sync%20Feedback%20(PSF)%20Version) to accurately measure filament tension in the bowden tube. This is used in place of and instead of the dual switch EMUSync. The sensor [is available to purchase from Aliexpress](https://www.aliexpress.com/item/1005010470743517.html).
+
+The proportional sensor offers the below key advantages:
+1. Real time tension/compression monitoring in the bowden tube
+2. Precise syncronisation between the extruder and EMU steppers
+3. Real time detection of both clogs and tangles
+
+### PFS Configuration:
+The sensor is plugged in [as per the wiring diagram](https://github.com/DW-Tas/EMU/tree/main/docs/assembly_wiring#wiring-instructions-and-diagrams) - ground and signal plug into the EBB thermistor port and 5V to any unused 5V pins on the EBB.
+
+**Step 1:** Comment out or delete the below section in the mmu_hardware.cfg file: 
+```
+# sync_feedback_tension_pin: ^mmu0:MMU_TENSION         # Compression is when you pull the bowden tubes (entry/exit) away from each other. Tension when you push the tubes together.
+# sync_feedback_compression_pin: ^mmu0:MMU_COMPRESSION
+```
+
+**Step 2:** Uncomment or add the below section right below in the mmu_hardware.cfg file:
+```
+# Section below if using the Proportional (PFS) version of the EMU Sync. Run the calibration routine (MMU_CALIBRATE_PSENSOR) and
+# update the sync_feedback_analog_max_compression, sync_feedback_analog_max_tension and sync_feedback_analog_neutral_point accordingly.
+# Comment out/delete the dual switch section above and uncomment the section below to use.
+sync_feedback_analog_pin: mmu0:MMU_TH
+sync_feedback_analog_max_compression: 0.9435
+sync_feedback_analog_max_tension:     0.0982
+sync_feedback_analog_neutral_point:   0.5275
+```
+**Step 3:** Restart and test the sensor. 
+1. Pull the bowden tube and expand the EMUSync PFS sensor. While holding in the expanded position run the below macro in the printer console: `MMU_QUERY_PSENSOR`.
+2. Compress the sensor by pushing the ends together and run the same macro again. Record both values.
+> [!IMPORTANT]
+> You should see a **max raw value** greater than ~0.9 and a **min raw value** or less than ~0.1. If the values do not change when expanding and compressing the sensor recheck your wiring!
+
+**Step 4:** Set the EMUSync dimensions in the mmu_parameters.cfg file as below. Save and restart.
+```
+sync_feedback_enabled: 1		
+sync_feedback_buffer_range: 16		# Travel in "buffer" between compression/tension or one sensor and end
+sync_feedback_buffer_maxrange: 16	# Absolute maximum end-to-end travel (mm) provided by buffer
+sync_feedback_speed_multiplier: 5	# % "twolevel" gear speed delta to keep filament neutral in buffer
+sync_feedback_boost_multiplier: 5	# % "twolevel" extra gear speed boost for finding initial neutral position
+sync_feedback_extrude_threshold: 10	# Extruder movement (mm) for updates
+```
+
+**Step 5:** Calibrate the sensor.
+1. Load filament from any lane to the toolhead using a Tx (T0,T1 etc) command.
+2. In the console run `MMU_CALIBRATE_PSENSOR`
+3. Note down the produced values
+> [!IMPORTANT]
+> If the max and min values differ significantly (>0.1) from the min and max raw values above, your calibration has failed due to excess bowden tube slack or because the sensor is getting jammed due to excess friction. Validate that the sensor moves freely and run the calibration command as follows: `MMU_CALIBRATE_PSENSOR MOVE=50`
+
+The produced values should look like the below:
+```
+sync_feedback_analog_max_compression: 0.9435
+sync_feedback_analog_max_tension:     0.0982
+sync_feedback_analog_neutral_point:   0.5275
+```
+
+Update the corresponding values in the mmu_hardware.cfg file, save and restart.
+
+**Step 6:** Configure flowguard (clog/tangle detection) <br/>
+Edit the mmu_parameters.cfg file and amend the values below to match the suggested configuration.
+
+```
+flowguard_enabled: 1	
+flowguard_max_relief: 14
+flowguard_encoder_mode: 0
+```
+Save and restart. 
+
+**Step 7:** You can now start a print and test the sensor in a print
+1. Start a print and monitor the flowguard value in the MMU panel. It should remain close to the neutral (0) threshold
+2. Expand the sensor manually - flowguard should trigger a pause. Let go, and click resume. The print should continue uninterrupted.
+
+<img width="436" height="780" alt="image" src="https://github.com/user-attachments/assets/077a016e-9157-475b-a02c-4390ebe10665" />
+
+### EMUSync PFS insights:
+You can use the sync sensor to visualise your printer's extrusion consistency, checking whether you are pushing the hotend to its limits. To do so, enable logging `sync_feedback_debug_log: 1` in the mmu_parameters.cfg file and restart. Run a print and after it is complete, execute the below command in the printer shell `~/Happy-Hare/utils/plot_sync_feedback.sh ~/printer_data/logs/sync_5.jsonl` where sync_N being the lane number in use.
+
+You can read more on how to interpret the sync feedback telemetry data in the [Happy Hare wiki](https://github.com/moggieuk/Happy-Hare/wiki/Synchronized-Gear-Extruder#interpreting-telemetry).
+
+**Normal telemetry data with an "unstressed" hotend** </br>
+Notice how the orange line is **pretty flat and consistent**. This indicates that there is very little dynamic variation during printing between the EMU and the extruder, meaning the extruder can maintain ideal flow easily throughout the print. Also how the blue line (EMU rotation distance) converges and stabilises fairly quickly to a perfectly stable value.</br></br>
+<img width="1800" height="900" alt="image" src="https://github.com/user-attachments/assets/73aedbd2-5938-4414-8442-36321fd1d819" />
+
+**Telemetry data showing a tangle developing towards the end of the print** </br>
+Notice how the orange and blue lines slowly creep away from neutral and then flowguard (red vertical line) triggers saving the print.</br></br>
+<img width="1800" height="900" alt="T2 sim_plot" src="https://github.com/user-attachments/assets/c6760dec-85cd-4502-81f9-8a0fd76c5387" />
+
+**Telemetry data showing a hotend that is struggling to keep up with flow when printing at higher flow rates** </br>
+Notice how the blue line (RD) and orange line (sensor position) rapidly deviate from neutral when an object with high flow rate is printed.</br></br>
+<img width="1800" height="900" alt="image" src="https://github.com/user-attachments/assets/63324652-7d46-47a6-ad3e-42b72f09fb5a" />
+
+
+
+
