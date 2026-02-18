@@ -188,7 +188,7 @@ File contents - mmu_hardware.cfg:
 ```
 [mmu_machine]
 num_gates: 8			
-mmu_vendor: Other			
+mmu_vendor: EMU			
 mmu_version: 1.0			
 
 selector_type: VirtualSelector
