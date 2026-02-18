@@ -188,7 +188,7 @@ File contents - mmu_hardware.cfg:
 ```
 [mmu_machine]
 num_gates: 8			
-mmu_vendor: Other			
+mmu_vendor: EMU			
 mmu_version: 1.0			
 
 selector_type: VirtualSelector
@@ -769,7 +769,7 @@ Edit the mmu_parameters.cfg file and amend the values below to match the suggest
 
 ```
 flowguard_enabled: 1	
-flowguard_max_relief: 14
+flowguard_max_relief: 3
 flowguard_encoder_mode: 0
 ```
 Save and restart. 
