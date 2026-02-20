@@ -769,7 +769,7 @@ Edit the mmu_parameters.cfg file and amend the values below to match the suggest
 
 ```
 flowguard_enabled: 1	
-flowguard_max_relief: 3
+flowguard_max_relief: 2
 flowguard_encoder_mode: 0
 ```
 Save and restart. 
