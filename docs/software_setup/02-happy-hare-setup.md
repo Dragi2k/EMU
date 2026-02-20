@@ -744,8 +744,8 @@ sync_feedback_enabled: 1
 sync_feedback_buffer_range: 16		# Travel in "buffer" between compression/tension or one sensor and end
 sync_feedback_buffer_maxrange: 16	# Absolute maximum end-to-end travel (mm) provided by buffer
 sync_feedback_speed_multiplier: 5	# % "twolevel" gear speed delta to keep filament neutral in buffer
-sync_feedback_boost_multiplier: 5	# % "twolevel" extra gear speed boost for finding initial neutral position
-sync_feedback_extrude_threshold: 10	# Extruder movement (mm) for updates
+sync_feedback_boost_multiplier: 3	# % "twolevel" extra gear speed boost for finding initial neutral position
+sync_feedback_extrude_threshold: 5	# Extruder movement (mm) for updates
 ```
 
 **Step 5:** Calibrate the sensor.
