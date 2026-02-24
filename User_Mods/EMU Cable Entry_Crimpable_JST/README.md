@@ -2,7 +2,7 @@
 
 ![Inside](pics/Inside.jpg)
 
-![Outside](pics/Outside.jpg0)
+![Outside](pics/Outside.jpg)
 
 for the 3 and 4 pin use these : 
 https://de.aliexpress.com/item/1005008063018644.html
