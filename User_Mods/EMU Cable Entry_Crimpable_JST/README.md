@@ -1,8 +1,8 @@
 # EMU Cable Entry with Cimpable JST sockets
 
-![Inside](User_Mods\EMU Cable Entry_Crimpable_JST\pics\Inside.jpg) | width=100
+![Inside](\pics\Inside.jpg) | width=100
 
-![Outside](User_Mods\EMU Cable Entry_Crimpable_JST\pics\Outside.jpg) | width=100
+![Outside](\pics\Outside.jpg) | width=100
 
 for the 3 and 4 pin use these : 
 https://de.aliexpress.com/item/1005008063018644.html
