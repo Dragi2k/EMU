@@ -1,6 +1,6 @@
 # EMU Cable Entry with Cimpable JST sockets
 
-![Inside](pics/Inside.jpg | width=100)
+![Inside](pics/Inside.jpg =250x250))
 
 ![Outside](pics/Outside.jpg | width=80)
 
